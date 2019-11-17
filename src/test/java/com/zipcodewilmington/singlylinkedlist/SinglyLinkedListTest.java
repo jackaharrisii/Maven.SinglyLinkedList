@@ -134,4 +134,37 @@ public class SinglyLinkedListTest {
         Assert.assertEquals(expected,testList.toString());
     }
 
+    @Test
+    // test copy an existing list
+    public void testCopy(){
+        SinglyLinkedList copyOfTestList = new SinglyLinkedList();
+        copyOfTestList = testList.copy();
+        Assert.assertEquals(testList.toString(),copyOfTestList.toString());
+    }
+
+    @Test
+    // test copy an empty list
+    public void testCopy2(){
+        SinglyLinkedList copyOfTestList = new SinglyLinkedList();
+        testList.clear();
+        copyOfTestList = testList.copy();
+        Assert.assertEquals(testList.toString(),copyOfTestList.toString());
+    }
+
+    @Test
+    // test copy a null list
+    public void testCopy3(){
+        SinglyLinkedList copyOfTestList = new SinglyLinkedList();
+        copyOfTestList = nullList.copy();
+        Assert.assertEquals(nullList.toString(),copyOfTestList.toString());
+    }
+
+    @Test
+    // sort a list of E's
+    public void testSort(){
+        testList.add("Q");
+        testList.add("8");
+        Assert.assertEquals("[1][2][3][4][5][8][Q]", testList.sort().toString());
+    }
+
 }

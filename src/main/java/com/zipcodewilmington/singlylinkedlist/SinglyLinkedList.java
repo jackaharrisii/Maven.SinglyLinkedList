@@ -3,9 +3,9 @@ package com.zipcodewilmington.singlylinkedlist;
 /**
  * Created by leon on 1/10/18.
  */
-public class SinglyLinkedList {
+public class SinglyLinkedList <E>{
 
-    private Node head;        // NOTE: HEAD IS NOT ITSELF A NODE IN THE LIST - THINK OF HEAD AS HAVING AN INDEX OF -1
+    private Node<E> head;        // NOTE: HEAD IS NOT ITSELF A NODE IN THE LIST - THINK OF HEAD AS HAVING AN INDEX OF -1
     private int listCount;    // THE NUMBER OF NODES IN THE LIST
 
     public SinglyLinkedList(){
@@ -23,7 +23,7 @@ public class SinglyLinkedList {
     }
 
     // ADDING A NEW NODE TO THE END OF THE LIST
-    public void add (Object data){
+    public void add (E data){
         if (head == null){                             //if adding the first element to the list
             head = new Node(data);
         }
@@ -40,9 +40,9 @@ public class SinglyLinkedList {
     }
 
     // INSERTING A NEW NODE AT A SPECIFIED INDEX
-    public void add (Object data, int index){
-        Node tempNode = new Node(data);                // saves the new node to be added later
-        Node currentNode = head;                       // starts at the beginning
+    public void add (E data, int index){
+        Node<E> tempNode = new Node<E>(data);                // saves the new node to be added later
+        Node<E> currentNode = head;                       // starts at the beginning
 
         if (currentNode != null) {                     // in case of null pointer exceptions
             for (int i = 0; i < index && currentNode.getNext() != null; i++){    // find the directed index, or the end if larger than the current size
@@ -75,15 +75,15 @@ public class SinglyLinkedList {
     }
 
     // CHECKS LIST TO SEE IF THE LIST CONTAINS A VALUE
-    public boolean contains( Object searchData){
+    public boolean contains( E searchData){
         int index = this.find(searchData);
         if (index >= 0) { return true; }
         else { return false; }
     }
 
     //RETURN INDEX OF SEARCH DATA, OR -1 IF DATA IS NOT IN THE LIST
-    public int find(Object searchData){
-        Node currentNode = null;
+    public int find(E searchData){
+        Node<E> currentNode = null;
         if (head != null){                                  // prevents null pointer exception
             if (head.getNext() == null) { return -1;}       // returns -1 if the list is empty
             currentNode = head.getNext();                   // starts at index 0 (REMEMBER - HEAD IS NOT PART OF THE LIST, HEAD.GETNEXT IS INDEX 0)
@@ -107,9 +107,9 @@ public class SinglyLinkedList {
     }
 
     // RETURNS OBJECT AT A SPECIFIED INDEX
-    public Object get(int index){
+    public E get(int index){
         if (index < 0){ return null; }                // prevents out of bounds exception
-        Node currentNode = null;
+        Node<E> currentNode = null;
         if (head != null){                            // prevents null pointer exception
             if (head.getNext() == null) { return null;} //returns null if the list is empty
             currentNode = head.getNext();             // starts at index 0 (NOTE - HEAD IS NOT PART OF THE LIST, HEAD.GETNEXT IS INDEX 0)
@@ -121,22 +121,64 @@ public class SinglyLinkedList {
             }
             return currentNode.getData();             // returns the found node data
         }
-        return currentNode;                           // returns current
+        return (E) currentNode;                           // returns current
     }
 
-    // RETURNS A NEW LIST CONTAINING THE SAME VALUES AS THIS.LIST (DEEP OR SHALLOW COPY?)
-    public SinglyLinkedList copy(){
-        return null;
+    // RETURNS A NEW LIST CONTAINING THE SAME VALUES AS THIS.LIST (THIS WILL BE A DEEP COPY - i.e., COMPLETELY INDEPENDENT OF THE ORIGINAL)
+    public SinglyLinkedList <E> copy(){
+        SinglyLinkedList <E> listCopy = new SinglyLinkedList();
+        Node<E> currentNode = null;
+        if (this.head == null) { return listCopy;}              // returns a null list if this. is null
+        if (this.head.getNext() == null) {                      // returns an empty list if this.size() = 0
+            listCopy.add((E) "");
+            listCopy.clear();                                   // (you can't clear a null list.....)
+        }
+        if (this.head.getNext() != null){                       // returns a copy of the list if it has at least one node after the head
+            currentNode = this.head.getNext();
+            while (currentNode != null){
+                listCopy.add(currentNode.getData());
+                currentNode = currentNode.getNext();
+            }
+        }
+        return listCopy;
     }
 
-    // SORTS THE LIST PER [TBD] CRITERIA
-    public void sort(){
-
+    // RETURNS A SORTED VERSION OF THE INDICATED LIST
+    public SinglyLinkedList <E> sort() {
+        boolean sorted = false;
+        while (!sorted) {
+            sorted = true;
+            for (Node<E> node = this.head; node.getNext() != null; node = node.getNext()) {
+                if (node.compareTo(node.getNext())) {
+                    node.swapNext();
+                    sorted = false;
+                }
+            }
+        }
+        return this;
     }
+
+//        Node currentNode = null;
+//        Node tempNode = null;
+//        if (head.getNext() != null) {currentNode = head.getNext();}
+//        for (int i = 0; i < this.size()-1; i++){
+//            for (int j = 0; j < this.size()-i-j; j++){
+//                if (currentNode.getData().toString().length() > currentNode.getNext().getData().toString().length()){
+//
+//                    tempNode = currentNode;
+//                    currentNode = currentNode.getNext();
+//                    currentNode.getNext() = tempNode;
+//
+//                }
+//            }
+//        }
+//        return false;
 
     // OPTIONAL - REVERSES THE ORDER OF THE LIST
     public void reverse(){
         // optional
+        // build tail and prevNode to do this, and just make a copy
+        // start from tail.getPrev() for the source array and set head.getNext of the new array
     }
 
     // OPTIONAL - RETURNS A SUBSET OF THIS.LIST
