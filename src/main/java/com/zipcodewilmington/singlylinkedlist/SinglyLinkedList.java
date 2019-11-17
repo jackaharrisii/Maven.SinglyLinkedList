@@ -5,15 +5,24 @@ package com.zipcodewilmington.singlylinkedlist;
  */
 public class SinglyLinkedList {
 
-    private Node head;
-    private static int listCount;
+    private Node head;        // NOTE: HEAD IS NOT ITSELF A NODE IN THE LIST - THINK OF HEAD AS HAVING AN INDEX OF -1
+    private int listCount;    // THE NUMBER OF NODES IN THE LIST
 
     public SinglyLinkedList(){
-        head = new Node(null);
         listCount = 0;
     }
 
-    // adding a new node to the end of the list
+    // CLEARS ALL NODES FROM THE LIST
+    public boolean clear (){
+        if (head != null){                             // if the list exists
+            head.setNext(null);                        // set the head to have no following node
+            listCount = 0;                             // reset the list counter
+            return true;                               // tell the user that clear was successful
+        }
+        return false;                                  //
+    }
+
+    // ADDING A NEW NODE TO THE END OF THE LIST
     public void add (Object data){
         if (head == null){                             //if adding the first element to the list
             head = new Node(data);
@@ -30,7 +39,7 @@ public class SinglyLinkedList {
         incrementCounter();                            // increment the count of nodes in the list
     }
 
-    // adding a new node to a specific index in the list
+    // INSERTING A NEW NODE AT A SPECIFIED INDEX
     public void add (Object data, int index){
         Node tempNode = new Node(data);                // saves the new node to be added later
         Node currentNode = head;                       // starts at the beginning
@@ -45,10 +54,64 @@ public class SinglyLinkedList {
         incrementCounter();                           // increment the count of nodes in the list
     }
 
+    // REMOVES A NODE AT A SPECIFIED INDEX
+    public boolean remove (int index) {
+        if (index < 0 || index > size()) { return false; }                // ensures the index exists
+        Node currentNode = head;                                          // starts at the head
+        if (head != null) {                                               // avoids NPE
+            for (int i = 0; i <= index; i++) {                            // iterates through the nodes
+                if (currentNode.getNext() == null) {                      // if it hasn't found it, returns false (i.e., nothing was removed)
+                    return false;
+                }
+                if (i == index){
+                    currentNode.setNext((currentNode.getNext().getNext()));       // sets the current node (@ i-1) to skip the removed node
+                    decrementCounter();                                           // adjust the list size
+                    return true;                                                  // lets us know that a node was successfully removed
+                }
+                currentNode = currentNode.getNext();                      // if it's not at the directed index yet, keep going
+            }
+        }
+        return false;
+    }
+
+    // CHECKS LIST TO SEE IF THE LIST CONTAINS A VALUE
+    public boolean contains( Object searchData){
+        int index = this.find(searchData);
+        if (index >= 0) { return true; }
+        else { return false; }
+    }
+
+    //RETURN INDEX OF SEARCH DATA, OR -1 IF DATA IS NOT IN THE LIST
+    public int find(Object searchData){
+        Node currentNode = null;
+        if (head != null){                                  // prevents null pointer exception
+            if (head.getNext() == null) { return -1;}       // returns -1 if the list is empty
+            currentNode = head.getNext();                   // starts at index 0 (REMEMBER - HEAD IS NOT PART OF THE LIST, HEAD.GETNEXT IS INDEX 0)
+            for (int i = 0; i < this.size(); i++) {         // iterates through the list if index is greater than 0 (if index = 0, skips the loop)
+                if (currentNode.getData().equals(searchData)) {
+                    return i;
+                }
+//                if (currentNode.getNext() == null) {      // returns null if it hasn't found it in the list
+//                    return false;
+//                }
+                currentNode = currentNode.getNext();        // sets the current to the next item
+            }
+//            return currentNode.getData();                 // returns the found node data
+        }
+        return -1;                                          // returns -1 if data was not found
+    }
+
+    // RETURNS CURRENT SIZE OF THE LIST
+    public int size(){
+        return listCount;
+    }
+
+    // RETURNS OBJECT AT A SPECIFIED INDEX
     public Object get(int index){
         if (index < 0){ return null; }                // prevents out of bounds exception
         Node currentNode = null;
         if (head != null){                            // prevents null pointer exception
+            if (head.getNext() == null) { return null;} //returns null if the list is empty
             currentNode = head.getNext();             // starts at index 0 (NOTE - HEAD IS NOT PART OF THE LIST, HEAD.GETNEXT IS INDEX 0)
             for (int i = 0; i < index; i++) {         // iterates through the list if index is greater than 0 (if index = 0, skips the loop)
                 if (currentNode.getNext() == null) {  // returns null if it hasn't found it in the list
@@ -61,27 +124,33 @@ public class SinglyLinkedList {
         return currentNode;                           // returns current
     }
 
-    public boolean remove (int index) {
-        if (index < 1 || index > size()) { return false; }        // ensures the index exists
-        Node currentNode = head;                                          // starts at the head
-        if (head != null) {                                               // avoids NPE
-            for (int i = 0; i < index; i++) {                             // iterates through the nodes
-                if (currentNode.getNext() == null) {                      // if it hasn't found it, returns false (i.e., nothing was removed)
-                    return false;
-                }
-                currentNode = currentNode.getNext();                      // if it's not at the directed index yet, keep going
-            }
-            currentNode.setNext((currentNode.getNext().getNext()));       // sets the current node to skip the removed node
-                                                                          // do I also need to set the next nodes previous to the current node?
-            decrementCounter();                                           // adjust the list size
-            return true;                                                  // lets us know that a node was successfully removed
-        }
-        return false;
+    // RETURNS A NEW LIST CONTAINING THE SAME VALUES AS THIS.LIST (DEEP OR SHALLOW COPY?)
+    public SinglyLinkedList copy(){
+        return null;
     }
 
+    // SORTS THE LIST PER [TBD] CRITERIA
+    public void sort(){
+
+    }
+
+    // OPTIONAL - REVERSES THE ORDER OF THE LIST
+    public void reverse(){
+        // optional
+    }
+
+    // OPTIONAL - RETURNS A SUBSET OF THIS.LIST
+    public SinglyLinkedList slice(){
+        // optional - but if completed, reference this when doing the copy
+        return null;
+    }
+
+    // NOT IN DIRECTIONS, BUT I WANTED TO DO IT ANYWAY
     public String toString() {
         String output = "";
+        if (head == null) { return "list has not been instantiated"; }
         if (head != null) {
+            if (head.getNext() == null){ return "list is empty"; }
             Node currentNode = head.getNext();
             while (currentNode != null) {
                 output += "[" + currentNode.getData().toString() + "]";
@@ -89,17 +158,13 @@ public class SinglyLinkedList {
             }
         }
         return output;
-
-    }
-    public int size(){
-        return listCount;
     }
 
-    private static void incrementCounter(){
+    private void incrementCounter(){
         listCount++;
     }
 
-    private static void decrementCounter(){
+    private void decrementCounter(){
         listCount--;
     }
 

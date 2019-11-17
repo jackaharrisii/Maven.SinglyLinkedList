@@ -1,5 +1,6 @@
 package com.zipcodewilmington.singlylinkedlist;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,31 +21,32 @@ public class SinglyLinkedListTest {
         testList.add("2");
         testList.add("3");
         testList.add("4");
+        testList.add("5");
+    }
+
+    @After
+    public void tearDown() throws Exception{
+        testList.clear();
     }
 
     @Test
     public void testNullaryConstructor(){
         Assert.assertEquals(0, nullList.size());
-        // NOTE THAT THERE ARE NO EXISTENT ELEMENTS IN THIS LIST
-        // GET(INDEX 0) WOULD DRAW A NULL POINTER EXCEPTION
-
-        // I think this is failing because it's confusing the two lists somehow
+        Assert.assertNull(nullList.get(0));
     }
 
     @Test
-    public void testGetSize(){
-        Assert.assertEquals(4, testList.size());
+    public void testClear(){
+        Assert.assertTrue(testList.clear());
+        Assert.assertEquals(0, testList.size());
+        Assert.assertNull(testList.get(0));
     }
 
     @Test
     public void testAdd(){
-        testList.add("5");
-        Assert.assertEquals("1", testList.get(0));
-        Assert.assertEquals("2", testList.get(1));
-        Assert.assertEquals("3", testList.get(2));
-        Assert.assertEquals("4", testList.get(3));
-        Assert.assertEquals("5", testList.get(4));
-        Assert.assertEquals(5, testList.size());
+        testList.add("6");
+        Assert.assertEquals("6", testList.get(5));
+        Assert.assertEquals(6, testList.size());
     }
 
     @Test
@@ -56,17 +58,80 @@ public class SinglyLinkedListTest {
     }
 
     @Test
+    // removes from middle of list
     public void testRemove(){
-        testList.remove(0);
+        Assert.assertTrue(testList.remove(2));
+        Assert.assertEquals("4", testList.get(2));
+        Assert.assertEquals(4, testList.size());
+    }
+
+    @Test
+    // removes the first element in the list
+    public void testRemove2(){
+        Assert.assertTrue(testList.remove(0));
         Assert.assertEquals("2", testList.get(0));
+        Assert.assertEquals(4, testList.size());
+    }
+
+    @Test
+    public void testContains(){
+        Assert.assertTrue(testList.contains("1"));
+        Assert.assertTrue(testList.contains("5"));
+        Assert.assertFalse(testList.contains("Q"));
+    }
+
+    @Test
+    public void testFind(){
+        Assert.assertEquals(0, testList.find("1"));
+        Assert.assertEquals(3, testList.find("4"));
+        Assert.assertEquals(-1, testList.find("Horse"));
+    }
+
+    @Test
+    public void testSize(){
+        //getSize is returning the size of the most recently constructed list, not necessarily the list in question
+        // need to figure out why listCount is operating independently
+        // SOLVED - I had listCount operating as a static variable
         Assert.assertEquals(5, testList.size());
-        // I think this removed the last item in the list instead of the first - look at the toString()
+    }
+
+    @Test
+    // test get when object exists
+    public void testGet(){
+        Assert.assertEquals("3", testList.get(2));
+    }
+
+    @Test
+    // test get when object does not exist
+    public void testGet2(){
+        Assert.assertNull(testList.get(8));
+    }
+
+    @Test
+    // test get when passing an invalid index
+    public void testGet3(){
+        Assert.assertNull(testList.get(-1));
     }
 
     @Test
     public void testToString(){
         String expected = "[1][2][3][4][5]";
         Assert.assertEquals(expected, testList.toString());
+    }
+
+    @Test
+    // test toString with a null list
+    public void testToString2(){
+        String expected = "list has not been instantiated";
+        Assert.assertEquals(expected,nullList.toString());
+    }
+
+    @Test
+    // test toString with an empty list
+    public void testToString3(){
+        testList.clear();
+        String expected = "list is empty";
+        Assert.assertEquals(expected,testList.toString());
     }
 
 }
